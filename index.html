@@ -1,0 +1,754 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Infinity ∞</title>
+<link rel="manifest" href="manifest-v5.json">
+<link rel="apple-touch-icon" href="apple-touch-icon-v5.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192-v5.png">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Infinity">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one column command log — focus band, project cards, open questions, priority board, journal. Lighthouse amber on night-sea ink. */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --ink:#14212c; --muted:#5b6874; --line:#d5dce2;
+  --accent:#c9771a; --accent-soft:#f6e6d0;
+  --good:#2f7d4f; --warn:#b5820f; --bad:#b33a3a;
+  --f-display:"Unbounded",system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d151c; --surface:#16212b; --ink:#e6ecf1; --muted:#93a1ad; --line:#26333f;
+  --accent:#f0a24a; --accent-soft:#3a2a17; --good:#5dbb83; --warn:#e2b24a; --bad:#e57373; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d151c; --surface:#16212b; --ink:#e6ecf1; --muted:#93a1ad; --line:#26333f;
+  --accent:#f0a24a; --accent-soft:#3a2a17; --good:#5dbb83; --warn:#e2b24a; --bad:#e57373; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:32px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.inf{font-family:var(--f-display);font-size:52px;line-height:1;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:700;font-size:26px;margin:0;letter-spacing:.01em}
+.sub{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.stamp{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:right}
+.live{display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--good)}
+h2{font-family:var(--f-display);font-weight:500;font-size:16px;margin:0;text-wrap:balance;letter-spacing:.02em}
+.sec{display:flex;flex-direction:column;gap:14px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.count{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.focus{background:var(--ink);color:var(--bg);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:6px}
+.focus .lbl{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.focus .txt{font-size:18px;font-weight:600;text-wrap:balance}
+.focus .next{font-size:14px;opacity:.8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ptop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pname{font-weight:700;font-size:16px}
+.parent{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.chip{font-family:var(--f-mono);font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.s-active{color:var(--good)}.s-paused{color:var(--muted)}.s-risk{color:var(--bad)}.s-plan{color:var(--warn)}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.pct{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stage{font-size:14px}
+.wl{display:flex;flex-direction:column;gap:4px;font-size:13.5px;margin:0;padding:0;list-style:none}
+.wl li{display:flex;gap:8px}
+.wl .m{font-family:var(--f-mono);flex:none;width:14px}
+.win .m{color:var(--good)}.fail .m{color:var(--bad)}
+.q{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:12px 14px}
+.q.mine{border-left-color:var(--accent)}
+.q .body{flex:1;min-width:0}
+.q .meta{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:720px){.board{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.colh{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.colh.p1{border-color:var(--bad)}.colh.p2{border-color:var(--warn)}.colh.p3{border-color:var(--muted)}
+.task{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+.task.done .tt{text-decoration:line-through;color:var(--muted)}
+.task .tt{flex:1;min-width:0;font-size:14px}
+.task .tp{font-family:var(--f-mono);font-size:11px;color:var(--muted);display:block}
+.log{display:flex;flex-direction:column}
+.entry{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.entry .d{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.entry .k{font-family:var(--f-mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+.entry p{margin:2px 0 0}
+@media (max-width:480px){.entry{grid-template-columns:1fr;gap:2px}}
+button,.btn{font:inherit;font-size:13px;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);border-color:var(--accent);color:#1a1006}
+.tick{width:22px;height:22px;padding:0;flex:none;border-radius:6px;font-size:13px;line-height:1}
+.add{display:flex;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border-radius:12px;padding:12px}
+.add input,.add select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-width:0}
+.add input{flex:1 1 220px}
+.prop{border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.plbl{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ptxt{font-size:14px}
+.pneed{font-size:12.5px;color:var(--muted)}
+.pact{display:flex;gap:8px;flex-wrap:wrap}
+.pst{font-family:var(--f-mono);font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid currentColor;text-transform:none;letter-spacing:0}
+.st-approved{color:var(--warn)}.st-running{color:var(--accent)}.st-done{color:var(--good)}.st-failed{color:var(--bad)}
+.pres{font-size:13.5px;background:var(--bg);border-radius:8px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.pres a{color:var(--accent)}
+.canon{display:flex;flex-direction:column;gap:3px;font-size:13.5px}
+.canon a{color:var(--accent);overflow-wrap:anywhere}
+.clbl{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mic{display:inline-flex;align-items:center;gap:6px}
+.cbox{display:flex;flex-direction:column;gap:6px;background:var(--accent-soft);border-radius:10px;padding:10px}
+.cbox textarea{font:inherit;font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical;min-height:72px}
+.pcmt{font-size:13px;color:var(--muted);border-left:2px solid var(--accent);padding-left:8px}
+.pans{font-size:13.5px;background:var(--bg);border-radius:8px;padding:8px 10px}
+.queue{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;padding:12px;border:1px dashed var(--line);border-radius:10px}
+.note{font-size:13px;color:var(--muted)}
+
+.dboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.dcol{display:flex;flex-direction:column;gap:6px;min-width:0}
+.colh.dh{border-color:var(--ink);font-weight:600}
+.dlist{display:flex;flex-direction:column;gap:6px}
+.dtask{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:8px;padding:7px 8px;cursor:pointer;min-width:0}
+.dtask.p1{border-left-color:var(--bad)}.dtask.p2{border-left-color:var(--warn)}.dtask.p3{border-left-color:var(--muted)}
+.dtask .ttx{font-size:13px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.dtask.open .ttx{display:block;-webkit-line-clamp:unset}
+.dtask .tp,.dtask .dact{display:none}
+.dtask.open .tp{display:block;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:4px}
+.dtask.open .dact{display:block;margin-top:6px}
+.dtask .dact button{font-size:12px;padding:4px 8px}
+.dtask.done .ttx{text-decoration:line-through;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:4px 0;color:var(--accent);font-size:12.5px;text-align:left;cursor:pointer}
+.linkbtn:hover{border:0;text-decoration:underline}
+.dlegend{font-size:11.5px;color:var(--muted)}
+.ttl{height:40px;width:auto;display:block;margin-bottom:6px}.ttl-white{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ttl-white{display:block}:root:not([data-theme="light"]) .ttl-ink{display:none}}
+:root[data-theme="dark"] .ttl-white{display:block}:root[data-theme="dark"] .ttl-ink{display:none}
+.inflogo{width:96px;height:96px;border-radius:18px;align-self:flex-start;margin-top:-8px;flex:none;display:block;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.pbtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pbtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);border-top-width:4px;background:var(--surface);text-align:left;min-width:0}
+.pbtn span{font-size:13px;font-weight:600;color:var(--muted)}
+.pbtn b{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.pbtn.p1{border-top-color:var(--bad)}.pbtn.p2{border-top-color:var(--warn)}.pbtn.p3{border-top-color:var(--muted)}
+.pbtn[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pbtn[aria-expanded="true"] span{color:var(--bg);opacity:.8}
+.pbtn.p1[aria-expanded="true"]{border-top-color:var(--bad)}.pbtn.p2[aria-expanded="true"]{border-top-color:var(--warn)}
+.dtag{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:3px;display:block}
+.dtask.open .dtag{display:none}
+.folds{display:flex;flex-wrap:wrap;gap:8px}
+.fold{display:inline-flex;align-items:baseline;gap:8px;border-radius:99px;padding:7px 14px}
+.fold b{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.fold[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.frow{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.frow .meta{font-family:var(--f-mono);font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.newb{font-family:var(--f-mono);font-size:10.5px;padding:1px 7px;border-radius:99px;background:var(--accent);color:#1a1006}
+.st-archived,.st-trash{color:var(--muted)}
+.lg{display:inline-block;width:12px;height:3px;margin:0 4px 2px 8px;vertical-align:middle;border-radius:2px}
+.lg.p1{background:var(--bad)}.lg.p2{background:var(--warn)}.lg.p3{background:var(--muted)}
+.mchat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;gap:8px}
+.mhead{display:flex;align-items:center;gap:8px}
+.mhead b{font-family:var(--f-display);font-weight:500;font-size:15px}
+.mhead .linkbtn{margin-left:auto}
+.mdot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.mstat{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.mthread{max-height:190px;min-height:44px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+footer{font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.06em;text-align:center}
+.tabbar{display:flex;gap:6px;position:sticky;top:0;z-index:40;background:var(--bg);padding-block:6px;margin:-6px 0 -10px}
+.tabbtn{flex:1;font-family:var(--f-display);font-weight:600;font-size:14px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);text-align:center}
+.tabbtn[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tabpanel{display:flex;flex-direction:column;gap:32px}
+.brandmark{display:inline-flex;align-items:center;height:1.4em;padding:0 .45em;border-radius:.4em;background:#0b1120;color:#fff;font-family:var(--f-display);font-weight:700;font-size:.92em;vertical-align:-.26em;line-height:1;gap:.08em}
+.brandmark .bl{color:#2dd4bf}
+.focusmark{display:inline-block;font-size:1.75em;line-height:1;vertical-align:-.38em;margin-left:.1em}
+.brandmark .bd{position:relative;display:inline-block;width:.78em;height:.56em;margin:0 .1em;vertical-align:middle}
+.brandmark .bd i{position:absolute;border-radius:50%;display:inline-block}
+.brandmark .bd i:nth-child(1){width:.46em;height:.46em;left:0;top:.1em;background:#2f6fe8;z-index:1}
+.brandmark .bd i:nth-child(2){width:.46em;height:.46em;left:.26em;top:0;background:#ff5a96;z-index:2}
+.brandmark .bd i:nth-child(3){width:.15em;height:.15em;left:.3em;top:.2em;background:#ffd23f;z-index:3}
+.inflogo-wrap{position:relative;width:96px;height:96px;border-radius:18px;align-self:flex-start;margin-top:-8px;flex:none;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.inflogo-wrap .inflogo{width:100%;height:100%;display:block;border-radius:18px}
+.rundot{position:absolute;inset:0;pointer-events:none}
+.rundot i{position:absolute;top:0;left:0;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;
+  box-shadow:0 0 5px 2px rgba(255,255,255,.95),0 0 13px 5px rgba(255,255,255,.55);
+  offset-rotate:0deg;opacity:0;
+  animation:inf-run 2.3s cubic-bezier(.37,0,.63,1) 1 both}
+.inflogo-wrap .rundot i{offset-path:path('M28.63,34.33 C36.38,34.33 43.7,47.25 48.0,47.25 C52.3,47.25 59.62,60.16 67.37,60.16 C75.12,60.16 81.58,54.57 81.58,47.25 C81.58,39.93 75.12,34.33 67.37,34.33 C59.62,34.33 52.3,47.25 48.0,47.25 C43.7,47.25 36.38,60.16 28.63,60.16 C20.88,60.16 14.42,54.57 14.42,47.25 C14.42,39.93 20.88,34.33 28.63,34.33')}
+.splash-logo .rundot i{width:13px;height:13px;margin:-6.5px 0 0 -6.5px;box-shadow:0 0 8px 3px rgba(255,255,255,.95),0 0 20px 7px rgba(255,255,255,.55);
+  offset-path:path('M76.65,67.91 C94.06,67.91 110.51,96.94 120.19,96.94 C129.86,96.94 146.31,125.96 163.72,125.96 C181.14,125.96 195.65,113.39 195.65,96.94 C195.65,80.49 181.14,67.91 163.72,67.91 C146.31,67.91 129.86,96.94 120.19,96.94 C110.51,96.94 94.06,125.96 76.65,125.96 C59.23,125.96 44.72,113.39 44.72,96.94 C44.72,80.49 59.23,67.91 76.65,67.91');
+  animation-duration:1.5s}
+@keyframes inf-run{0%{offset-distance:0%;opacity:0}6%{opacity:1}90%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){.rundot i{animation:none;opacity:0}}
+
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="inflogo-wrap"><img class="inflogo" src="header-inf-v5.png" alt="Логотип ∞" width="96" height="96"><div class="rundot" aria-hidden="true"><i></i></div></div>
+      <div><h1 aria-label="Infiniti"><img class="ttl ttl-ink" src="title-infiniti-ink.png" alt="" width="185" height="40"><img class="ttl ttl-white" src="title-infiniti-white.png" alt="" width="185" height="40"></h1><div class="sub" style="font-family:var(--f-display);text-transform:none;letter-spacing:0;font-size:13.5px"><span class="brandmark">Co🫧<span class="bl">Laba</span></span> <span class="focusmark">🎯</span></div></div>
+    </div>
+    <div class="stamp"><span class="live"><span class="dot" id="dot"></span><span id="liveTxt">підключення…</span></span><br><span id="updated"></span></div>
+  </header>
+
+  <div class="tabbar" id="tabbar" role="tablist" aria-label="Розділи">
+    <button type="button" class="tabbtn" data-tab="today" role="tab" aria-selected="true" aria-controls="panel-today">Сьогодні</button>
+    <button type="button" class="tabbtn" data-tab="projects" role="tab" aria-selected="false" aria-controls="panel-projects">Проєкти</button>
+  </div>
+
+  <div class="tabpanel" id="panel-today" role="tabpanel">
+
+  <section class="sec mchat" id="mchat" aria-label="Чат з Маяком">
+    <div class="mhead"><span class="mdot" aria-hidden="true"></span><b>Маяк</b><span class="mstat" id="mStat">поруч</span><button class="linkbtn" id="mExpand" type="button">На весь екран</button></div>
+    <div class="mode" role="group" aria-label="Режим Маяка"><button type="button" data-mode="quick" title="Миттєві короткі відповіді">Швидко</button><button type="button" data-mode="default" title="Звичайна робота">Збалансовано</button><button type="button" data-mode="complex" title="Складні рішення: думає довше, до хвилини">Максимум</button></div>
+    <div class="mthread" id="mThread" aria-live="polite"></div>
+    <div class="compose">
+      <button type="button" class="iconbtn mic2" id="mMic" aria-label="Говорити" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+      <textarea id="mAsk" rows="1" placeholder="Напиши Маяку…" aria-label="Повідомлення Маяку"></textarea>
+      <button type="button" class="primary" id="mSend">➤</button>
+      <button type="button" id="mStop" hidden>Стоп</button>
+    </div>
+  </section>
+
+  <section class="focus" id="focus">
+    <div class="lbl">Фокус зараз</div>
+    <div class="txt" id="focusTxt">Тут з'явиться головний вектор тижня.</div>
+    <div class="next" id="focusNext"></div>
+  </section>
+
+  <section class="sec" id="tasksSec">
+    <div class="sechead"><h2>Справи за пріоритетом</h2><span class="count" id="tCount"></span></div>
+    <div class="pbtns">
+      <button type="button" class="pbtn p1" data-pcol="1" aria-expanded="false" aria-controls="pList"><span>Високий</span><b id="n1">0</b></button>
+      <button type="button" class="pbtn p2" data-pcol="2" aria-expanded="false" aria-controls="pList"><span>Середній</span><b id="n2">0</b></button>
+      <button type="button" class="pbtn p3" data-pcol="3" aria-expanded="false" aria-controls="pList"><span>Низький</span><b id="n3">0</b></button>
+    </div>
+    <div class="dlist" id="pList" hidden></div>
+    <div class="dlegend" id="pHint">Натисни пріоритет, щоб відкрити лише цей список. Торкнись справи, щоб розгорнути.</div>
+    <button type="button" class="linkbtn" id="showDone" hidden></button>
+    <form class="add" id="tForm" hidden>
+      <input id="tInput" placeholder="Нова справа" autocomplete="off">
+      <select id="tDiff" aria-label="Важкість"><option value="easy">Легка</option><option value="medium" selected>Середня</option><option value="hard">Важка</option></select>
+      <select id="tPri" aria-label="Пріоритет"><option value="1">Високий</option><option value="2" selected>Середній</option><option value="3">Низький</option></select>
+      <button class="primary" type="submit">Додати</button>
+    </form>
+  </section>
+
+  </div>
+
+  <div class="tabpanel" id="panel-projects" role="tabpanel" hidden>
+
+  <section class="sec">
+    <div class="sechead"><h2>Проєкти</h2><span class="count" id="pCount"></span></div>
+    <div class="grid" id="projects"><div class="empty">Проєкти завантажуються. Маяк додає їх після кожної робочої сесії.</div></div>
+    <p class="note" id="schedNote">Натисни «Так, зроби» під пропозицією, і Маяк виконає її при найближчій перевірці. Результат з'явиться на картці.</p>
+  </section>
+
+  <section class="sec">
+    <div class="sechead"><h2>Доручити Маяку</h2><span class="queue" id="queue"></span></div>
+    <form class="add" id="pForm" hidden>
+      <input id="pInput" placeholder="Що зробити? Напр.: знайди безкоштовний генератор озвучки українською" autocomplete="off">
+      <select id="pProj" aria-label="Проєкт"></select>
+      <button class="primary" type="submit">Доручити</button>
+    </form>
+    <p class="note" id="pOff">Доручення можна давати тут, коли сторінка підключена до бази.</p>
+  </section>
+
+  <section class="sec" id="foldSec">
+    <div class="sechead"><h2>Пропозиції за станом</h2><span class="count" id="fCount"></span></div>
+    <div class="folds" id="folds"></div>
+    <div class="sec" id="fList" style="gap:8px" hidden></div>
+    <p class="note">Шлях пропозиції: нова → чекає твого рішення → прийнято → виконано → архів → кошик. Без твоєї відмітки пропозиція лишається «чекає». Кошик зберігає 30 днів, потім Маяк видаляє назавжди.</p>
+  </section>
+
+  <section class="sec">
+    <div class="sechead"><h2>Незакриті питання</h2><span class="count" id="qCount"></span></div>
+    <p class="note">Те, на чому розмова обірвалась: питання без відповіді, відповіді, які ти міг не помітити.</p>
+    <div class="sec" id="questions" style="gap:8px"><div class="empty">Поки нічого не загубилось.</div></div>
+    <form class="add" id="qForm" hidden>
+      <input id="qInput" placeholder="Записати питання, щоб не загубилось" autocomplete="off">
+      <button class="primary" type="submit">Додати</button>
+    </form>
+  </section>
+
+
+  <section class="sec">
+    <div class="sechead"><h2>Журнал</h2><span class="count" id="lCount"></span></div>
+    <div class="log" id="log"><div class="empty">Записи рішень і зробленого з'являться тут.</div></div>
+    <form class="add" id="lForm" hidden>
+      <input id="lInput" placeholder="Нотатка в журнал" autocomplete="off">
+      <button class="primary" type="submit">Записати</button>
+    </form>
+  </section>
+
+  </div>
+
+  <footer><span class="brandmark">Co🫧<span class="bl">Laba</span></span> Production · ∞</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const STATUS={active:["в роботі","s-active"],paused:["на паузі","s-paused"],risk:["під загрозою","s-risk"],plan:["план","s-plan"]};
+const fmtD=d=>{try{const x=new Date(d);return x.toLocaleDateString("uk-UA",{day:"2-digit",month:"2-digit",year:"numeric"})}catch(e){return d||""}};
+let db=null,canWrite=false;
+const state={projects:[],proposals:[]};
+const PST={pending:["чекає твого рішення",""],approved:["схвалено · у черзі","st-approved"],running:["виконую","st-running"],done:["готово","st-done"],failed:["не вийшло","st-failed"],revise:["переробляю за твоїм коментарем","st-running"],archived:["архів","st-archived"],declined:["архів","st-archived"],trash:["кошик","st-trash"]};
+const isNew=p=>p.status==="pending"&&p.date&&(Date.now()-new Date(p.date).getTime())<864e5;
+const safeUrl=u=>/^https:\/\//.test(String(u||""))?String(u):"";
+const MIC='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+let openCmt=null; const drafts={}; const thinking=new Set(); const cmtErr={};
+function propHtml(p){
+  const id=esc(p._id);
+  const [lbl,cls]=thinking.has(p._id)?["Маяк думає…","st-running"]:(PST[p.status]||PST.pending);
+  const who=p.source==="Роман"?"Твоє доручення":"Пропозиція Маяка";
+  let h=`<div class="prop"><div class="plbl">${who}<span class="pst ${cls}">${lbl}</span>${isNew(p)?'<span class="newb">нове</span>':""}</div><div class="ptxt">${esc(p.text)}</div>`;
+  if(p.answer&&p.status==="pending")h+=`<div class="pans"><b>Маяк:</b> ${esc(p.answer)}</div>`;
+  if(p.lastComment&&(p.status==="pending"||p.status==="revise"))h+=`<div class="pcmt">Твій коментар: ${esc(p.lastComment)}</div>`;
+  if(p.needs&&(p.status==="pending"||p.status==="approved"))h+=`<div class="pneed">Потрібно від тебе: ${esc(p.needs)}</div>`;
+  if((p.status==="done"||p.status==="failed")&&p.result){
+    const u=safeUrl(p.resultUrl);
+    h+=`<div class="pres">${esc(p.result)}${u?`\n<a href="${esc(u)}" target="_blank" rel="noopener">Відкрити результат</a>`:""}</div>`;
+  }
+  const canCmt=canWrite&&!thinking.has(p._id)&&["pending","done","failed"].includes(p.status);
+  if(canCmt&&openCmt!==p._id){
+    h+=`<div class="pact">${p.status==="pending"?`<button class="primary" data-approve="${id}">Так, зроби</button>`:""}<button class="mic" data-cmt="${id}">${MIC}<span>Коментар</span></button>${p.status==="pending"?`<button data-move="${id}" data-to="archived">Не зараз</button>`:`<button data-move="${id}" data-to="archived">В архів</button>`}</div>`;
+  }
+  if(canCmt&&openCmt===p._id){
+    h+=`<div class="cbox"><label class="clbl" for="c-${id}">Що змінити? Скажи або напиши</label><textarea id="c-${id}" rows="3" data-draft="${id}" placeholder="Напр.: не підходить, бо… Краще зроби так…"></textarea><div class="pneed">Щоб говорити: торкнись поля, потім мікрофона ${MIC} на клавіатурі телефона.</div><div class="pact"><button class="primary" data-send="${id}">Надіслати Маяку</button><button data-cancel="${id}">Скасувати</button></div></div>`;
+  }
+  if(cmtErr[p._id])h+=`<div class="pneed">${esc(cmtErr[p._id])}</div>`;
+  return h+"</div>";
+}
+function propsFor(pid){
+  const list=state.proposals.filter(p=>p.projectId===pid&&!["declined","archived","trash"].includes(p.status));
+  const live=list.filter(p=>["pending","approved","running","revise"].includes(p.status));
+  const fin=list.filter(p=>p.status==="done"||p.status==="failed").sort((a,b)=>String(b.doneAt||b.date).localeCompare(String(a.doneAt||a.date))).slice(0,2);
+  return [...live,...fin];
+}
+function renderQueue(){
+  const q=state.proposals.filter(p=>p.status==="approved"||p.status==="running").length;
+  const w=state.proposals.filter(p=>p.status==="pending").length;
+  $("queue").textContent=(w?w+" чекають рішення · ":"")+(q?q+" у черзі виконання":"черга порожня");
+}
+const FOLDS=[
+  ["wait","Чекають рішення",p=>p.status==="pending"],
+  ["took","Прийняті",p=>["approved","running","revise"].includes(p.status)],
+  ["done","Виконано",p=>p.status==="done"||p.status==="failed"],
+  ["arch","Архів",p=>p.status==="archived"||p.status==="declined"],
+  ["bin","Кошик",p=>p.status==="trash"]];
+let openFold=null,purged=false;
+function foldActs(p){
+  if(!canWrite)return "";
+  const id=esc(p._id),b=(to,t,cls)=>`<button type="button" class="${cls||""}" data-move="${id}" data-to="${to}">${t}</button>`;
+  if(p.status==="pending")return `<button type="button" class="primary" data-approve="${id}">Так, зроби</button>`+b("archived","Не зараз");
+  if(p.status==="done"||p.status==="failed")return b("archived","В архів");
+  if(p.status==="archived"||p.status==="declined")return b("pending","Повернути на рішення")+b("trash","У кошик");
+  if(p.status==="trash")return b(p.prevStatus&&p.prevStatus!=="trash"?p.prevStatus:"archived","Відновити");
+  return "";
+}
+function renderFolds(){
+  const ps=state.proposals,pn=id=>(state.projects.find(x=>x._id===id)||{}).name||"";
+  $("folds").innerHTML=FOLDS.map(([k,t,f])=>`<button type="button" class="fold" data-fold="${k}" aria-pressed="${openFold===k}">${t}<b>${ps.filter(f).length}</b></button>`).join("");
+  $("fCount").textContent=ps.filter(p=>isNew(p)).length?ps.filter(p=>isNew(p)).length+" нових":"";
+  const el=$("fList");const fd=FOLDS.find(x=>x[0]===openFold);
+  if(!fd){el.hidden=true;return}
+  el.hidden=false;
+  const list=ps.filter(fd[2]).sort((a,b)=>String(b.trashedAt||b.archivedAt||b.doneAt||b.date).localeCompare(String(a.trashedAt||a.archivedAt||a.doneAt||a.date)));
+  el.innerHTML=list.length?list.map(p=>{const [lbl,cls]=PST[p.status]||PST.pending;const u=safeUrl(p.resultUrl);
+    const left=p.status==="trash"&&p.trashedAt?Math.max(0,30-Math.floor((Date.now()-new Date(p.trashedAt).getTime())/864e5)):null;
+    return `<div class="frow"><div class="meta"><span>${esc(pn(p.projectId))}</span><span class="pst ${cls}">${lbl}</span>${isNew(p)?'<span class="newb">нове</span>':""}<span>${fmtD(p.date)}</span>${left!==null?`<span>видалиться через ${left} дн.</span>`:""}</div>
+    <div class="ptxt">${esc(p.text)}</div>${p.result?`<div class="pres">${esc(p.result)}${u?`\n<a href="${esc(u)}" target="_blank" rel="noopener">Відкрити результат</a>`:""}</div>`:""}
+    <div class="pact">${foldActs(p)}</div></div>`}).join(""):'<div class="empty">Тут порожньо.</div>';
+}
+function purgeTrash(){
+  if(purged||!canWrite||!db)return;purged=true;
+  state.proposals.filter(p=>p.status==="trash"&&p.trashedAt&&(Date.now()-new Date(p.trashedAt).getTime())>30*864e5).forEach(p=>db.doc("proposals/"+p._id).delete().catch(()=>{}));
+}
+function renderProjects(){
+  const docs=state.projects.slice();
+  const el=$("projects");
+  renderQueue();renderFolds();
+  const sel=$("pProj");const cur=sel.value;
+  sel.innerHTML=docs.slice().sort((a,b)=>(a.order??99)-(b.order??99)).map(p=>`<option value="${esc(p._id)}">${esc(p.name)}</option>`).join("");
+  if(cur)sel.value=cur;
+  if(!docs.length){el.innerHTML='<div class="empty">Проєктів ще немає.</div>';$("pCount").textContent="";return}
+  docs.sort((a,b)=>(a.order??99)-(b.order??99));
+  $("pCount").textContent=docs.length+" у роботі CoLaba";
+  el.innerHTML=docs.map(p=>{
+    const [st,cls]=STATUS[p.status]||["—","s-paused"];
+    const pct=Math.max(0,Math.min(100,Number(p.progress)||0));
+    const wins=(p.wins||[]).map(w=>`<li class="win"><span class="m">+</span><span>${esc(w)}</span></li>`).join("");
+    const fails=(p.fails||[]).map(w=>`<li class="fail"><span class="m">−</span><span>${esc(w)}</span></li>`).join("");
+    return `<article class="card">
+      <div class="ptop"><div><div class="pname">${esc(p.name)}</div><div class="parent">${esc(p.parent||"")}</div></div><span class="chip ${cls}">${st}</span></div>
+      <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
+      <div class="pct">${pct}% · ${esc(p.stage||"")}</div>
+      ${p.next?`<div class="stage"><b>Далі:</b> ${esc(p.next)}</div>`:""}
+      ${wins||fails?`<ul class="wl">${wins}${fails}</ul>`:""}
+      ${(p.canon||[]).filter(c=>safeUrl(c.url)).length?`<div class="canon"><span class="clbl">Актуальні документи</span>${(p.canon||[]).filter(c=>safeUrl(c.url)).map(c=>`<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}</a>`).join("")}</div>`:""}
+      ${propsFor(p._id).map(propHtml).join("")}
+    </article>`}).join("");
+  if(openCmt){const ta=$("c-"+openCmt);if(ta){ta.value=drafts[openCmt]||"";}}
+}
+function renderQuestions(docs){
+  const open=docs.filter(q=>!q.closed).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  $("qCount").textContent=open.length?open.length+" відкрито":"";
+  const el=$("questions");
+  if(!open.length){el.innerHTML='<div class="empty">Поки нічого не загубилось.</div>';return}
+  el.innerHTML=open.map(q=>`<div class="q ${q.who==="Маяк"?"mine":""}">
+    ${canWrite?`<button class="tick" data-close="${esc(q._id)}" aria-label="Закрити питання">✓</button>`:""}
+    <div class="body"><div>${esc(q.text)}</div><div class="meta">${esc(q.who||"")} · ${esc(q.project||"")} · ${fmtD(q.date)}</div></div></div>`).join("");
+}
+let tDocs=[],showDoneT=false;const openTask=new Set();
+let openPri=null;try{const v=Number(localStorage.getItem("infinity.pri"));if([1,2,3].includes(v))openPri=v}catch(e){}
+const PRI={1:"високий пріоритет",2:"середній пріоритет",3:"низький пріоритет"},DIFF={easy:"легка",medium:"середня",hard:"важка"},DORD={hard:0,medium:1,easy:2};
+const pOf=t=>[1,2,3].includes(Number(t.priority))?Number(t.priority):2;
+const dOf=t=>DIFF[t.difficulty]?t.difficulty:"medium";
+function renderTasks(docs){
+  if(docs)tDocs=docs.filter(t=>!t.mergedInto);
+  [1,2,3].forEach(p=>{$("n"+p).textContent=tDocs.filter(t=>!t.done&&pOf(t)===p).length;const b=document.querySelector('[data-pcol="'+p+'"]');if(b)b.setAttribute("aria-expanded",String(openPri===p))});
+  const el=$("pList");
+  if(!openPri){el.hidden=true}else{
+    el.hidden=false;
+    const list=tDocs.filter(t=>pOf(t)===openPri&&(showDoneT||!t.done)).sort((a,b)=>(a.done?1:0)-(b.done?1:0)||DORD[dOf(a)]-DORD[dOf(b)]||String(b.date).localeCompare(String(a.date)));
+    el.innerHTML=list.length?list.map(t=>{const p=pOf(t);return `<div class="dtask p${p}${t.done?" done":""}${openTask.has(t._id)?" open":""}" data-tid="${esc(t._id)}" role="button" tabindex="0" aria-expanded="${openTask.has(t._id)}"><div class="ttx">${esc(t.title)}</div><span class="dtag">${esc(t.project||"")}${t.project?" · ":""}${DIFF[dOf(t)]}</span><span class="tp">${esc(t.project||"")}${t.project?" · ":""}${PRI[p]} · ${DIFF[dOf(t)]} · ${fmtD(t.date)}</span><div class="dact">${canWrite?`<button type="button" data-toggle="${esc(t._id)}" data-done="${t.done?1:0}">${t.done?"Повернути в роботу":"✓ Виконано"}</button>`:""}</div></div>`}).join(""):'<div class="empty">У цьому списку порожньо.</div>';
+  }
+  const left=tDocs.filter(t=>!t.done).length,dn=tDocs.length-left;
+  $("tCount").textContent=left+" відкрито";
+  const sd=$("showDone");sd.hidden=!dn||!openPri;sd.textContent=showDoneT?"Сховати виконані":"Показати виконані · "+tDocs.filter(t=>t.done&&pOf(t)===openPri).length;
+}
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-toggle]"))return;
+  const pc=e.target.closest("[data-pcol]");if(pc){const v=Number(pc.dataset.pcol);openPri=openPri===v?null:v;try{localStorage.setItem("infinity.pri",String(openPri||""))}catch(err){}renderTasks();return}
+  const fo=e.target.closest("[data-fold]");if(fo){openFold=openFold===fo.dataset.fold?null:fo.dataset.fold;renderFolds();return}
+  const t=e.target.closest("[data-tid]");if(t){const id=t.dataset.tid;openTask.has(id)?openTask.delete(id):openTask.add(id);renderTasks();return}
+  if(e.target.closest("#showDone")){showDoneT=!showDoneT;renderTasks()}
+});
+document.addEventListener("keydown",e=>{const t=e.target.closest&&e.target.closest("[data-tid]");if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();t.click()}});
+function renderLog(docs){
+  docs.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  $("lCount").textContent=docs.length?docs.length+" записів":"";
+  const el=$("log");
+  if(!docs.length){el.innerHTML='<div class="empty">Записи рішень і зробленого з\'являться тут.</div>';return}
+  el.innerHTML=docs.slice(0,60).map(e=>`<div class="entry"><div class="d">${fmtD(e.date)}</div><div><span class="k">${esc(e.kind||"запис")} · ${esc(e.project||"")}</span><p>${esc(e.text)}</p></div></div>`).join("");
+  const last=docs[0];if(last)$("updated").textContent="оновлено "+fmtD(last.date);
+}
+function renderFocus(d){
+  if(!d)return;
+  $("focusTxt").textContent=d.text||"";
+  $("focusNext").textContent=d.next?("Наступний крок: "+d.next):"";
+}
+
+function sub(name,fn){
+  db.collection(name).onSnapshot(s=>fn(s.docs.map(d=>({...d.data(),_id:d.id}))),e=>{$("liveTxt").textContent="зв'язок втрачено";$("dot").className="dot"});
+}
+async function boot(){
+  if(!window.claude){$("liveTxt").textContent="офлайн";return}
+  db=await claude.use("db");
+  if(!db){$("liveTxt").textContent="база недоступна в цьому перегляді";return}
+  const user=await claude.use("user");
+  canWrite=user?(user.canEdit()):false;
+  $("dot").className="dot on";$("liveTxt").textContent="онлайн";
+  if(canWrite){["qForm","tForm","lForm","pForm"].forEach(id=>$(id).hidden=false);$("pOff").hidden=true}
+  sub("projects",d=>{state.projects=d;renderProjects()});
+  sub("proposals",d=>{state.proposals=d;renderProjects();purgeTrash()});
+  db.doc("meta/schedule").onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.text)$("schedNote").textContent=d.text},()=>{});sub("questions",renderQuestions);sub("tasks",renderTasks);sub("log",renderLog);
+  db.doc("meta/focus").onSnapshot(s=>renderFocus(s.exists?s.data():null),()=>{});
+}
+const today=()=>new Date().toISOString().slice(0,10);
+async function safe(p){try{await p}catch(e){alertBox(e&&e.code==="quota_exceeded"?"База заповнена. Попроси Маяка почистити старі записи.":"Не вдалося зберегти. Спробуй ще раз.")}}
+function alertBox(m){$("liveTxt").textContent=m}
+$("qForm").addEventListener("submit",e=>{e.preventDefault();const v=$("qInput").value.trim();if(!v||!db)return;$("qInput").value="";safe(db.collection("questions").add({text:v,who:"Роман",project:"",date:today(),closed:false}))});
+$("tForm").addEventListener("submit",e=>{e.preventDefault();const v=$("tInput").value.trim();if(!v||!db)return;$("tInput").value="";safe(db.collection("tasks").add({title:v,priority:Number($("tPri").value),difficulty:$("tDiff").value,project:"",done:false,date:today()}))});
+$("lForm").addEventListener("submit",e=>{e.preventDefault();const v=$("lInput").value.trim();if(!v||!db)return;$("lInput").value="";safe(db.collection("log").add({text:v,kind:"нотатка",project:"Роман",date:new Date().toISOString()}))});
+$("pForm").addEventListener("submit",e=>{e.preventDefault();const v=$("pInput").value.trim();if(!v||!db)return;$("pInput").value="";safe(db.collection("proposals").add({projectId:$("pProj").value,text:v,status:"approved",source:"Роман",date:new Date().toISOString(),approvedAt:new Date().toISOString()}))});
+document.addEventListener("input",e=>{const t=e.target.closest("[data-draft]");if(t)drafts[t.dataset.draft]=t.value});
+async function rework(id,p,comment){
+  let sample=null;try{sample=await claude.use("sample")}catch(e){}
+  if(!sample){cmtErr[id]="Коментар збережено. Маяк переробить пропозицію при найближчій перевірці.";renderProjects();return}
+  const proj=state.projects.find(x=>x._id===p.projectId)||{};
+  const ask=`Ти Маяк, виконавчий директор CoLaba Production. Власник і генеральний директор — Роман, він не пише код. Відповідай українською.
+Проєкт: ${proj.name||""}. Етап: ${proj.stage||""}. Наступний крок проєкту: ${proj.next||""}.
+Твоя попередня пропозиція: «${p.text||""}».${p.result?`\nРезультат, який ти вже показав: «${p.result}».`:""}
+Коментар Романа: «${comment}».
+Переробі пропозицію так, щоб вона повністю врахувала коментар. Дай найефективніше рішення з погляду фахівця цієї галузі. Пиши коротко (2–4 речення) і конкретно: що саме зробиш, яким інструментом чи сайтом. Закінчи фразою «Хочеш, я це зроблю?». Якщо в коментарі є питання, коротко відповідай на нього в полі answer.
+Поверни лише JSON: {"text":"нова пропозиція","needs":"що потрібно від Романа, або порожній рядок","answer":"відповідь на питання, або порожній рядок"}`;
+  thinking.add(id);renderProjects();
+  try{
+    const r=await sample.json(ask,{modelTier:"default",cache:false});
+    if(!r||typeof r.text!=="string"||!r.text.trim())throw{code:"invalid_json"};
+    await db.doc("proposals/"+id).update({text:r.text.trim(),needs:String(r.needs||""),answer:String(r.answer||""),status:"pending",source:"Маяк",revisedAt:new Date().toISOString()});
+    delete cmtErr[id];
+  }catch(e){
+    cmtErr[id]=e&&e.code==="not_granted"?"Без дозволу Маяк не може відповісти тут. Коментар збережено, переробка буде при найближчій перевірці.":e&&e.code==="rate_limited"?"Маяк зараз перевантажений. Коментар збережено, переробка буде при найближчій перевірці.":"Не вийшло переробити одразу. Коментар збережено, Маяк переробить при найближчій перевірці.";
+  }finally{thinking.delete(id);renderProjects()}
+}
+async function sendComment(id){
+  const ta=$("c-"+id);const v=(ta&&ta.value||"").trim();if(!v||!db)return;
+  const p=state.proposals.find(x=>x._id===id);if(!p)return;
+  const hist=(Array.isArray(p.history)?p.history:[]).concat([{text:p.text||"",result:p.result||"",comment:v,date:new Date().toISOString()}]).slice(-5);
+  openCmt=null;drafts[id]="";
+  const proj=state.projects.find(x=>x._id===p.projectId)||{};
+  try{
+    await db.doc("proposals/"+id).update({status:"revise",lastComment:v,history:hist,answer:""});
+    db.collection("log").add({date:new Date().toISOString(),kind:"коментар",project:proj.name||"",text:v}).catch(()=>{});
+  }catch(e){cmtErr[id]="Не вдалося зберегти коментар. Спробуй ще раз.";openCmt=id;drafts[id]=v;renderProjects();return}
+  rework(id,p,v);
+}
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-cmt]");if(c){openCmt=c.dataset.cmt;delete cmtErr[openCmt];renderProjects();const ta=$("c-"+openCmt);if(ta)ta.focus();return}
+  const x=e.target.closest("[data-cancel]");if(x){openCmt=null;renderProjects();return}
+  const s=e.target.closest("[data-send]");if(s){s.disabled=true;sendComment(s.dataset.send);return}
+  const a=e.target.closest("[data-approve]");if(a&&db){a.disabled=true;safe(db.doc("proposals/"+a.dataset.approve).update({status:"approved",approvedAt:new Date().toISOString()}));return}
+  const mv=e.target.closest("[data-move]");if(mv&&db){mv.disabled=true;const id=mv.dataset.move,to=mv.dataset.to,cur=(state.proposals.find(x=>x._id===id)||{}).status||"";const now=new Date().toISOString();const up={status:to,prevStatus:cur,movedAt:now};if(to==="trash")up.trashedAt=now;if(to==="archived")up.archivedAt=now;safe(db.doc("proposals/"+id).update(up));return}
+  const t=e.target.closest("[data-toggle]");if(t&&db){safe(db.doc("tasks/"+t.dataset.toggle).update({done:t.dataset.done!=="1"}));return}
+  const q=e.target.closest("[data-close]");if(q&&db){safe(db.doc("questions/"+q.dataset.close).update({closed:true}))}
+});
+let activeTab="today";try{const v=localStorage.getItem("infinity.tab");if(v==="projects")activeTab=v}catch(e){}
+function renderTab(){
+  document.querySelectorAll(".tabbtn").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===activeTab)));
+  $("panel-today").hidden=activeTab!=="today";
+  $("panel-projects").hidden=activeTab!=="projects";
+}
+document.addEventListener("click",e=>{const b=e.target.closest(".tabbtn");if(!b)return;activeTab=b.dataset.tab;try{localStorage.setItem("infinity.tab",activeTab)}catch(err){}renderTab();window.scrollTo(0,0)});
+renderTab();
+boot();
+</script>
+
+<style>
+/* Маяк: inline chat on the start page + floating corner button (backup) opening a full sheet; one shared conversation */
+.wrap{padding-bottom:120px}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:50;width:62px;height:62px;border-radius:50%;padding:0;border:0;background:var(--accent);color:#1a1006;box-shadow:0 6px 18px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:10px;font-weight:700;letter-spacing:.04em}
+.fab svg{width:26px;height:26px}
+.fab:hover{border-color:transparent;filter:brightness(1.05)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;max-height:86vh;display:flex;flex-direction:column;background:var(--surface);border-top-left-radius:18px;border-top-right-radius:18px;box-shadow:0 -10px 30px rgba(0,0,0,.25);padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));gap:10px}
+.sheet .grab{width:42px;height:4px;border-radius:99px;background:var(--line);align-self:center}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.shead b{font-family:var(--f-display);font-weight:500;font-size:16px}
+.seeing{font-family:var(--f-mono);font-size:11px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.seeing .chip{color:var(--accent)}
+.thread{flex:1;min-height:80px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.bub{max-width:88%;padding:8px 11px;border-radius:14px;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bub.me{align-self:flex-end;background:var(--accent-soft)}
+.bub.ai{align-self:flex-start;background:var(--bg)}
+.bub.sys{align-self:center;font-family:var(--f-mono);font-size:11px;color:var(--muted);background:none;padding:2px}
+.compose{display:flex;gap:8px;align-items:flex-end}
+.compose textarea{flex:1;min-width:0;font:inherit;font-size:16px;padding:9px 11px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:none;min-height:44px;max-height:140px}
+.compose button{height:44px;flex:none}
+.iconbtn{width:44px;padding:0;display:flex;align-items:center;justify-content:center}
+.iconbtn.rec{background:var(--bad);border-color:var(--bad);color:#fff}
+.shint{font-size:12px;color:var(--muted)}
+.scrim{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.35)}
+.mode{display:flex;gap:4px;flex-wrap:wrap}
+.mode button{font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--bg);color:var(--muted)}
+.mode button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.edge{position:fixed;left:0;top:38%;z-index:50;padding:14px 7px 14px calc(7px + env(safe-area-inset-left,0px));border-radius:0 12px 12px 0;border:0;background:var(--ink);color:var(--bg);box-shadow:0 4px 14px rgba(0,0,0,.22);font-family:var(--f-display);font-weight:500;font-size:12px;letter-spacing:.06em}
+.edge span{writing-mode:vertical-rl;transform:rotate(180deg);display:block}
+.edge:hover{border:0;filter:brightness(1.15)}
+.drawer{position:fixed;top:0;bottom:0;left:0;z-index:60;width:min(440px,92vw);display:flex;flex-direction:column;gap:10px;background:var(--surface);box-shadow:10px 0 30px rgba(0,0,0,.25);padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.drtabs{display:flex;gap:6px}
+.drtabs button{font-size:12.5px;border-radius:99px;padding:5px 12px;background:var(--bg);color:var(--muted)}
+.drtabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.drfind{display:flex;gap:6px}
+.drfind input{font:inherit;font-size:16px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+.drfind input[type=search]{flex:1}
+.drnote{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.day{align-self:center;font-family:var(--f-mono);font-size:11px;color:var(--muted);padding:4px 0}
+.dlog .entry{grid-template-columns:1fr;gap:2px}
+.qr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.qr button{font-size:12px;padding:3px 10px;border-radius:99px}
+.qr .q1{border-color:var(--bad)}.qr .q2{border-color:var(--warn)}
+.splash{position:fixed;inset:0;z-index:90;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:opacity .45s ease}
+.splash img{width:240px;height:240px;border-radius:44px;margin-bottom:10px}
+.splash-logo{position:relative;width:240px;height:240px;margin-bottom:10px}
+.splash-logo img{width:100%;height:100%;border-radius:44px;display:block;margin-bottom:0}
+.splt{font-family:var(--f-display);font-weight:500;font-size:26px;letter-spacing:.14em;color:#d8b46a}
+.spls{font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8f7a4c}
+.splash.out{opacity:0}
+@media (prefers-reduced-motion:reduce){.splash{transition:none}}
+.drawer[hidden],.edge[hidden],.splash[hidden],#dStop[hidden],#dSend[hidden],.sheet[hidden],.scrim[hidden],.fab[hidden],.iconbtn[hidden],#askStop[hidden],#askSend[hidden],#mStop[hidden],#mSend[hidden],.linkbtn[hidden]{display:none}
+</style>
+
+<button class="fab" id="fab" type="button" aria-label="Маяк — запитати про те, що на екрані" aria-expanded="false" aria-controls="sheet">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+  <span>Маяк</span>
+</button>
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="shead"><b id="sheetTitle">Маяк поруч</b><button type="button" id="sheetClose" aria-label="Закрити">✕</button></div>
+  <div class="seeing">Бачу на екрані: <span class="chip" id="seeing">—</span></div>
+  <div class="mode" role="group" aria-label="Режим Маяка"><button type="button" data-mode="quick" title="Миттєві короткі відповіді">Швидко</button><button type="button" data-mode="default" title="Звичайна робота">Збалансовано</button><button type="button" data-mode="complex" title="Складні рішення: думає довше, до хвилини">Максимум</button></div>
+  <div class="thread" id="thread" aria-live="polite"></div>
+  <div class="compose">
+    <button type="button" class="iconbtn" id="micBtn" aria-label="Говорити" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <textarea id="ask" rows="1" placeholder="Що думаєш про це?" aria-label="Повідомлення Маяку"></textarea>
+    <button type="button" class="primary" id="askSend">➤</button>
+    <button type="button" id="askStop" hidden>Стоп</button>
+  </div>
+  <div class="shint" id="shint">Щоб говорити: торкнись поля, потім мікрофона на клавіатурі телефона. Розмова зберігається в Infinity.</div>
+</section>
+
+<button class="edge" id="edge" type="button" aria-controls="drawer" aria-expanded="false" aria-label="Маяк — уся розмова і журнал рішень"><span>Маяк</span></button>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle" hidden>
+  <div class="shead"><b id="drTitle">Маяк · уся розмова</b><button type="button" id="drClose" aria-label="Закрити">✕</button></div>
+  <div class="drtabs" role="group" aria-label="Що показати"><button type="button" data-drtab="chat" aria-pressed="true">Розмова</button><button type="button" data-drtab="log" aria-pressed="false">Журнал рішень</button></div>
+  <div class="drfind">
+    <input id="drQ" type="search" placeholder="Пошук за словами" aria-label="Пошук за словами" autocomplete="off">
+    <input id="drD" type="date" aria-label="Дата">
+  </div>
+  <div class="drnote" id="drNote">Завантажую історію…</div>
+  <div class="thread" id="dThread" aria-live="polite"></div>
+  <div class="thread dlog" id="dLog" hidden></div>
+  <div class="compose" id="dCompose">
+    <button type="button" class="iconbtn" id="dMic" aria-label="Говорити" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <textarea id="dAsk" rows="1" placeholder="Напиши Маяку…" aria-label="Повідомлення Маяку"></textarea>
+    <button type="button" class="primary" id="dSend">➤</button>
+    <button type="button" id="dStop" hidden>Стоп</button>
+  </div>
+</aside>
+
+<div class="splash" id="splash" aria-hidden="true" hidden>
+  <div class="splash-logo"><img src="logo-tile-v5.png" alt="" width="240" height="240"><div class="rundot" aria-hidden="true"><i></i></div></div>
+  <div class="spls"><span class="brandmark">Co🫧<span class="bl">Laba</span></span></div>
+</div>
+
+<script>
+(function(){
+  const sp=document.getElementById("splash");
+  sp.hidden=false;
+  setTimeout(()=>{sp.classList.add("out");setTimeout(()=>{sp.hidden=true},500)},1100);
+  sp.addEventListener("click",()=>{sp.hidden=true});
+})();
+(function(){
+  const $=id=>document.getElementById(id);
+  const fab=$("fab"),sheet=$("sheet"),scrim=$("scrim");
+  const THREADS=[$("mThread"),$("thread"),$("dThread")];const WHERE={mThread:"inline",thread:"sheet",dThread:"drawer"};
+  let sample=null,dbx=null,canW=false,canTools=false,turns=[],ctl=null,busy=false,screenName="Головна",logMem="";
+  const MODES={quick:"Швидко",default:"Збалансовано",complex:"Максимум"};
+  let mode="default";try{const m=localStorage.getItem("infinity.mode");if(MODES[m])mode=m}catch(e){}
+  function renderMode(){document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)))}
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b||busy)return;mode=b.dataset.mode;try{localStorage.setItem("infinity.mode",mode)}catch(err){}renderMode()});
+  renderMode();
+  const RULES=`Ти — Маяк, виконавчий директор CoLaba Production і напарник Романа (генеральний директор, військовий, не пише код). Ти «сидиш поруч» з ним у його застосунку Infinity і бачиш те саме, що й він: текст екрана дано нижче. Розмірковуйте разом.
+Як відповідати: українською, коротко (2–6 речень), по суті того, що на екрані і що він питає. Кожна відповідь закінчується конкретною пропозицією рішення — найефективнішою з погляду фахівця цієї галузі («Пропоную так: …»). Якщо чогось не видно на екрані або не знаєш — скажи прямо, не вигадуй. Ніколи не кажи неправду.
+Під кожною твоєю відповіддю Роман бачить кнопки «1 високий · 2 середній · 3 низький» і може відповісти однією цифрою: сприймай це як його рішення щодо пріоритету того, що ти щойно запропонував, і рухай процес далі (якщо це нова справа — запиши її через addTask з цим пріоритетом).
+Якщо Роман просить щось записати або доручити — використай інструмент addTask (справа: важкість easy/medium/hard, пріоритет 1 високий, 2 середній, 3 низький) або addQuestion (питання, щоб не загубилось), а потім коротко підтвердь.
+Змінювати сам застосунок Infinity (екрани, кнопки, код) ти звідси не можеш. Якщо Роман просить таку зміну — НЕ відсилай його «відкрити сесію з доступом до коду». Запиши це справою через addTask (project "Infinity") і скажи одним реченням: «Записав. Щоб я це зробив, напиши в чаті Claude: "Маяк, виконуй справи Infinity"». Підтверджуй запис лише тоді, коли інструмент повернув 'ok'; якщо інструмент недоступний або видав помилку — скажи прямо, що не записалось.`;
+  function clip(s,n){s=String(s||"").replace(/\n{3,}/g,"\n\n").trim();return s.length>n?s.slice(0,n)+" …":s}
+  const secs=()=>[...document.querySelectorAll(".wrap section")].filter(s=>s.id!=="mchat");
+  const secName=s=>{const h=s.querySelector("h2");return h?h.textContent:(s.id==="focus"?"Фокус зараз":"розділ")};
+  function readScreen(){
+    const mid=window.innerHeight/2;let best=null,bd=1e9;
+    const vis=secs().filter(s=>{const r=s.getBoundingClientRect();return r.bottom>0&&r.top<window.innerHeight});
+    for(const s of vis){const r=s.getBoundingClientRect();const d=(r.top<=mid&&r.bottom>=mid)?0:Math.min(Math.abs(r.top-mid),Math.abs(r.bottom-mid));if(d<bd){bd=d;best=s}}
+    return {name:best?secName(best):"Головна",text:clip(vis.map(s=>"["+secName(s)+"]\n"+s.innerText).join("\n\n"),6000)};
+  }
+  function readHome(){return {name:"Головна",text:clip(secs().map(s=>"["+secName(s)+"]\n"+s.innerText).join("\n\n"),9000)}}
+  function bub(cls,txt){const now=new Date().toISOString();if(cls==="me")clearQR();const els=THREADS.map(t=>{const d=document.createElement("div");d.className="bub "+cls;d.textContent=txt;d.dataset.date=now;t.append(d);t.scrollTop=t.scrollHeight;return d});
+    return {set(v){els.forEach(e=>{e.textContent=v;e.parentNode&&(e.parentNode.scrollTop=e.parentNode.scrollHeight)})},remove(){els.forEach(e=>e.remove())}}}
+  function copy(c){return({not_granted:"Без твого дозволу Маяк тут не відповідає. Відкрий Infinity знову і натисни «Дозволити».",rate_limited:"Забагато запитів. Спробуй за хвилину.",session_expired:"Треба знову увійти в Claude.",sampling_disabled:"Маяк недоступний для цього акаунта.",refused:"На це Маяк не відповість. Переформулюй, будь ласка."})[c]||"Зв'язок перервався. Спробуй ще раз."}
+  function add(t,cls,txt,date){const d=document.createElement("div");d.className="bub "+cls;d.textContent=txt;if(date)d.dataset.date=date;t.append(d);return d}
+  function dayLbl(iso){try{return new Date(iso).toLocaleDateString("uk-UA",{weekday:"short",day:"2-digit",month:"long",year:"numeric"})}catch(e){return String(iso).slice(0,10)}}
+  async function loadHistory(){
+    if(!dbx){$("drNote").textContent="Історія доступна, коли Infinity відкрито через твій акаунт Claude.";return}
+    try{const s=await dbx.collection("chat").orderBy("date","desc").limit(500).get();const rows=s.docs.map(d=>d.data()).reverse();
+      if(rows.length){
+        [$("mThread"),$("thread")].forEach(t=>{t.textContent="";add(t,"sys","Попередня розмова");rows.slice(-10).forEach(r=>add(t,r.role==="user"?"me":"ai",String(r.text||""),r.date));t.scrollTop=t.scrollHeight});
+        rows.slice(-10).forEach(r=>turns.push({role:r.role==="user"?"user":"assistant",content:String(r.text||"")}));
+        const dt=$("dThread");dt.textContent="";let last="";
+        rows.forEach(r=>{const day=String(r.date||"").slice(0,10);if(day!==last){last=day;const d=document.createElement("div");d.className="day";d.textContent=dayLbl(r.date);dt.append(d)}add(dt,r.role==="user"?"me":"ai",String(r.text||""),r.date)});
+        $("drNote").textContent=rows.length+" повідомлень"+(rows.length>=500?" (останні 500)":"")+" · з "+fmtDay(rows[0].date);
+      }else $("drNote").textContent="Розмова ще порожня. Напиши Маяку перше повідомлення.";
+    }catch(e){$("drNote").textContent="Не вдалося завантажити історію. Відкрий шторку ще раз."}
+    try{const s=await dbx.collection("log").orderBy("date","desc").limit(10).get();
+      logMem=s.docs.map(d=>d.data()).map(r=>"- "+String(r.date||"").slice(0,10)+" "+(r.kind||"")+" · "+(r.project||"")+": "+clip(r.text,240)).join("\n")}catch(e){}
+  }
+  function fmtDay(iso){try{return new Date(iso).toLocaleDateString("uk-UA",{day:"2-digit",month:"2-digit",year:"numeric"})}catch(e){return ""}}
+  async function loadLog(){
+    const el=$("dLog");if(!dbx)return;
+    try{const s=await dbx.collection("log").orderBy("date","desc").limit(300).get();
+      el.innerHTML="";s.docs.map(d=>d.data()).forEach(r=>{const e=document.createElement("div");e.className="entry";e.dataset.date=String(r.date||"");
+        const d=document.createElement("div");d.className="d";d.textContent=fmtDay(r.date);
+        const w=document.createElement("div");const k=document.createElement("span");k.className="k";k.textContent=(r.kind||"запис")+" · "+(r.project||"");const pp=document.createElement("p");pp.textContent=String(r.text||"");w.append(k,pp);e.append(d,w);el.append(e)});
+      if(!el.children.length)el.innerHTML='<div class="empty">Журнал поки порожній.</div>';
+    }catch(e){el.innerHTML='<div class="empty">Не вдалося завантажити журнал.</div>'}
+  }
+  function clearQR(){document.querySelectorAll(".qr").forEach(q=>q.remove())}
+  function addQR(){clearQR();THREADS.forEach(t=>{const w=WHERE[t.id];const q=document.createElement("div");q.className="qr";q.innerHTML='<span>Пріоритет:</span><button type="button" class="q1" data-qr="1" data-w="'+w+'">1 високий</button><button type="button" class="q2" data-qr="2" data-w="'+w+'">2 середній</button><button type="button" data-qr="3" data-w="'+w+'">3 низький</button>';t.append(q);t.scrollTop=t.scrollHeight})}
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-qr]");if(!b||busy)return;const u=UI[b.dataset.w];if(!u)return;const n=b.dataset.qr;u.ask.value="Пріоритет "+n+" ("+({1:"високий",2:"середній",3:"низький"})[n]+")";send(b.dataset.w)});
+  function save(role,text,where){if(!dbx||!canW)return;dbx.collection("chat").add({role,text:clip(text,4000),screen:where,date:new Date().toISOString()}).catch(()=>{})}
+  const tools=[
+    {name:"addTask",description:"Записує нову справу на дошку «Справи за важкістю» в Infinity. Повертає 'ok'.",inputSchema:{type:"object",properties:{title:{type:"string"},difficulty:{type:"string",enum:["easy","medium","hard"]},priority:{type:"integer",enum:[1,2,3]},project:{type:"string"}},required:["title","difficulty","priority"]},
+     async execute(i){if(!dbx||!canW)throw new Error("немає права запису");const p=[1,2,3].includes(Number(i.priority))?Number(i.priority):2;const d=["easy","medium","hard"].includes(i.difficulty)?i.difficulty:"medium";await dbx.collection("tasks").add({title:String(i.title).slice(0,300),priority:p,difficulty:d,project:String(i.project||"").slice(0,80),done:false,date:new Date().toISOString().slice(0,10)});bub("sys","✓ Справу записано");return "ok"}},
+    {name:"addQuestion",description:"Записує питання в «Незакриті питання» в Infinity, щоб воно не загубилось. Повертає 'ok'.",inputSchema:{type:"object",properties:{text:{type:"string"}},required:["text"]},
+     async execute(i){if(!dbx||!canW)throw new Error("немає права запису");await dbx.collection("questions").add({text:String(i.text).slice(0,500),who:"Маяк",project:"",date:new Date().toISOString().slice(0,10),closed:false});bub("sys","✓ Питання записано");return "ok"}}
+  ];
+  const UI={inline:{ask:$("mAsk"),send:$("mSend"),stop:$("mStop"),mic:$("mMic")},sheet:{ask:$("ask"),send:$("askSend"),stop:$("askStop"),mic:$("micBtn")},drawer:{ask:$("dAsk"),send:$("dSend"),stop:$("dStop"),mic:$("dMic")}};
+  function setBusy(b){busy=b;Object.values(UI).forEach(u=>{u.send.hidden=b;u.stop.hidden=!b});$("mStat").textContent=b?(mode==="complex"?"думає глибоко…":"думає…"):"поруч"}
+  async function send(where){
+    const u=UI[where];const v=u.ask.value.trim();if(!v||busy)return;
+    if(!sample){bub("sys","Маяк відповідає лише всередині Claude. Відкрий Infinity через свій акаунт Claude.");return}
+    const scr=where==="sheet"?readScreen():readHome();screenName=scr.name;
+    u.ask.value="";u.ask.style.height="auto";bub("me",v);turns.push({role:"user",content:v});save("user",v,scr.name);
+    const out=bub("ai","Маяк думає…");setBusy(true);ctl=new AbortController();
+    const head=RULES+"\n\n"+(logMem?"Останні записи журналу Infinity:\n"+logMem+"\n\n":"")+"ЕКРАН ЗАРАЗ ("+(where==="sheet"?"розділ «"+scr.name+"»":"стартова сторінка, видно все")+"):\n"+scr.text;
+    const recent=turns.slice(-12);
+    const opts={signal:ctl.signal,modelTier:mode,onText:({text})=>out.set(text)};
+    if(canTools&&canW)opts.tools=tools;else opts.cache=false;
+    try{const r=await sample([{role:"user",content:head},...recent],opts);
+      turns.push({role:"assistant",content:r.text});save("assistant",r.text,scr.name);addQR();
+      if(r.truncated)bub("sys","Відповідь обірвалась — попроси коротше.");
+    }catch(e){
+      if(e&&e.text)out.set(e.text);else out.remove();
+      if(!(e&&e.code==="cancelled"))bub("sys",copy(e&&e.code));
+      if(e&&["not_granted","sampling_disabled","not_declared","capability_disabled"].includes(e.code))Object.values(UI).forEach(x=>x.send.disabled=true);
+      turns.pop();
+    }finally{setBusy(false);ctl=null}
+  }
+  Object.entries(UI).forEach(([where,u])=>{
+    u.send.addEventListener("click",()=>send(where));u.stop.addEventListener("click",()=>ctl&&ctl.abort());
+    u.ask.addEventListener("input",()=>{u.ask.style.height="auto";u.ask.style.height=Math.min(u.ask.scrollHeight,140)+"px"});
+    u.ask.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&window.matchMedia("(pointer:fine)").matches){e.preventDefault();send(where)}});
+  });
+  function open(){const scr=readScreen();screenName=scr.name;$("seeing").textContent=scr.name;
+    sheet.hidden=false;scrim.hidden=false;fab.setAttribute("aria-expanded","true");fab.hidden=true;$("thread").scrollTop=$("thread").scrollHeight;setTimeout(()=>UI.sheet.ask.focus(),50)}
+  function close(){sheet.hidden=true;drawer.hidden=true;scrim.hidden=true;fab.hidden=false;edge.hidden=false;fab.setAttribute("aria-expanded","false");edge.setAttribute("aria-expanded","false")}
+  const drawer=$("drawer"),edge=$("edge");let drTab="chat",logLoaded=false;
+  function openDrawer(){sheet.hidden=true;drawer.hidden=false;scrim.hidden=false;edge.hidden=true;fab.hidden=true;edge.setAttribute("aria-expanded","true");const t=$("dThread");t.scrollTop=t.scrollHeight;if(!logLoaded){logLoaded=true;loadLog()}}
+  function setTab(k){drTab=k;document.querySelectorAll("[data-drtab]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.drtab===k)));$("dThread").hidden=k!=="chat";$("dLog").hidden=k!=="log";$("dCompose").hidden=k!=="chat";if(k==="log")loadLog();filt()}
+  function filt(){const q=$("drQ").value.trim().toLowerCase(),d=$("drD").value;const box=drTab==="chat"?$("dThread"):$("dLog");const on=!!(q||d);let n=0;
+    [...box.children].forEach(c=>{if(c.classList.contains("day")||c.classList.contains("qr")||c.classList.contains("sys")){c.hidden=on;return}const ok=(!q||c.textContent.toLowerCase().includes(q))&&(!d||String(c.dataset.date||"").slice(0,10)===d);c.hidden=!ok;if(ok)n++});
+    if(on)$("drNote").textContent="Знайдено: "+n;}
+  edge.addEventListener("click",openDrawer);$("drClose").addEventListener("click",close);
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-drtab]");if(b)setTab(b.dataset.drtab)});
+  $("drQ").addEventListener("input",filt);$("drD").addEventListener("change",filt);
+  fab.addEventListener("click",open);$("mExpand").addEventListener("click",open);$("sheetClose").addEventListener("click",close);scrim.addEventListener("click",close);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&(!sheet.hidden||!drawer.hidden))close()});
+  // Voice: browser speech recognition where supported; keyboard dictation always works
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR)Object.values(UI).forEach(u=>{let rec=null;u.mic.hidden=false;
+    u.mic.addEventListener("click",()=>{
+      if(rec){rec.stop();return}
+      try{rec=new SR();rec.lang="uk-UA";rec.interimResults=true;rec.continuous=false;const base=u.ask.value?u.ask.value.trim()+" ":"";
+        rec.onresult=e=>{let t="";for(const r of e.results)t+=r[0].transcript;u.ask.value=base+t};
+        rec.onend=()=>{rec=null;u.mic.classList.remove("rec");u.mic.setAttribute("aria-label","Говорити")};
+        rec.onerror=()=>{rec=null;u.mic.classList.remove("rec");Object.values(UI).forEach(x=>x.mic.hidden=true);$("shint").textContent="Мікрофон тут не спрацював. Торкнись поля і натисни мікрофон на клавіатурі телефона."};
+        rec.start();u.mic.classList.add("rec");u.mic.setAttribute("aria-label","Зупинити запис");
+      }catch(e){rec=null;u.mic.hidden=true}
+    })});
+  bub("sys","Я поруч. Пиши або говори — бачу всю сторінку.");
+  (async()=>{
+    try{sample=await claude.use("sample")}catch(e){sample=null}
+    try{dbx=await claude.use("db");const us=await claude.use("user");canW=us?!!us.canEdit():false}catch(e){}
+    if(sample){try{const l=await sample.limits();canTools=!!(l&&l.tools)}catch(e){}}
+    await loadHistory();
+  })();
+})();
+</script>
+
+</body></html>
