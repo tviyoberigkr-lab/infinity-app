@@ -753,7 +753,7 @@ boot();
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+    navigator.serviceWorker.register('sw.js').catch(function(e){try{console.error('SW register failed:',e)}catch(err){}});
   });
 }
 </script>

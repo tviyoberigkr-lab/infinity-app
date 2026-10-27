@@ -1,9 +1,10 @@
 {
+  "id": "/",
   "name": "Infinity — CoLaba Production",
   "short_name": "Infinity",
   "description": "Щоденник фокусу, проєкти, задачі та журнал CoLaba Production",
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a0a",
