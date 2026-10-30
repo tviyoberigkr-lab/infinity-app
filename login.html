@@ -1,8 +1,14 @@
 <!doctype html><html lang="uk"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Infinity ∞ — Вхід</title>
-<meta name="theme-color" content="#0a0a0a">
+<title>Infinity ∞</title>
+<link rel="manifest" href="manifest-v5.json">
+<link rel="apple-touch-icon" href="apple-touch-icon-v5.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192-v5.png">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Infinity">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
@@ -48,5 +54,12 @@ f.addEventListener("submit",async e=>{
   }catch(e){err.textContent="Зв'язок перервався. Спробуй ще раз."}
   btn.disabled=false;btn.textContent="Увійти";
 });
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(e){try{console.error('SW register failed:',e)}catch(err){}});
+  });
+}
 </script>
 </body></html>
