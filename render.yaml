@@ -1,5 +1,13 @@
 services:
   - type: web
     name: infinity-app
-    runtime: static
-    staticPublishPath: .
+    runtime: node
+    buildCommand: "echo no-build-needed"
+    startCommand: "node server.js"
+    envVars:
+      - key: AUTH_USER
+        sync: false
+      - key: AUTH_PASS
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
