@@ -1,0 +1,13 @@
+{
+  "name": "infinity-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Infinity — вхід для CoLaba Production",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
